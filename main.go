@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +16,8 @@ func main() {
 	)
 
 	start, stop := httpserver.StartHTTPServer(host, port)
+
+	log.Println("create http server OK")
 
 	if err := start(); err != nil {
 		panic(err)

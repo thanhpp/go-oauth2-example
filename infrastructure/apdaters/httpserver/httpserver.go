@@ -3,15 +3,18 @@ package httpserver
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
 
 func StartHTTPServer(host, port string) (func() error, func()) {
-	server := &http.Server{
+	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%s", host, port),
 		Handler: NewRouter(),
 	}
+
+	log.Println("new http server ok", host, port)
 
 	start := func() error {
 		err := server.ListenAndServe()
