@@ -56,7 +56,7 @@ func (ctrl *GoogleOAuthCtrl) LoginHandler(c *gin.Context) {
 
 func (ctrl *GoogleOAuthCtrl) CallbackHandler(c *gin.Context) {
 	// get oauth state from cookie
-	oauthState, err := c.Request.Cookie(oauthStateKey)
+	oauthState, err := c.Cookie(oauthStateKey)
 	if err != nil {
 		log.Println("state not found", err)
 		resp := new(ErrorDTO)
@@ -65,7 +65,7 @@ func (ctrl *GoogleOAuthCtrl) CallbackHandler(c *gin.Context) {
 		return
 	}
 
-	if c.Request.FormValue("state") != oauthState.Value {
+	if c.Request.FormValue("state") != oauthState {
 		log.Println("invalid oauth state")
 		resp := new(ErrorDTO)
 		resp.SetCode(http.StatusNotAcceptable)

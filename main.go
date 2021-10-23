@@ -12,12 +12,12 @@ import (
 func main() {
 	var (
 		host = "127.0.0.1"
-		port = "8000"
+		port = "8585"
 	)
 
 	start, stop := httpserver.StartHTTPServer(host, port)
 
-	log.Println("create http server OK")
+	log.Println("create http server func OK")
 
 	if err := start(); err != nil {
 		panic(err)

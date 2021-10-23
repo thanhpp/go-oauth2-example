@@ -9,9 +9,11 @@ import (
 )
 
 func StartHTTPServer(host, port string) (func() error, func()) {
+	r := NewRouter()
+
 	server := http.Server{
 		Addr:    fmt.Sprintf("%s:%s", host, port),
-		Handler: NewRouter(),
+		Handler: r,
 	}
 
 	log.Println("new http server ok", host, port)

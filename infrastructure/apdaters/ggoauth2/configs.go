@@ -49,6 +49,8 @@ func NewOAuth2ConfigFromFile(path string) (*oauth2.Config, error) {
 		RedirectURL:  cfg.Web.RedirectUris[0],
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/user.birthday.read",
+			"https://www.googleapis.com/auth/userinfo.profile",
 		},
 	}, nil
 }
