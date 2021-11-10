@@ -12,7 +12,7 @@ import (
 func main() {
 	var (
 		host = "127.0.0.1"
-		port = "8585"
+		port = "8000"
 	)
 
 	start, stop := httpserver.StartHTTPServer(host, port)

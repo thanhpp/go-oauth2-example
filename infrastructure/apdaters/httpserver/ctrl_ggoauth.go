@@ -38,7 +38,9 @@ func (ctrl GoogleOAuthCtrl) randomState() string {
 
 func (ctrl *GoogleOAuthCtrl) LoginHandler(c *gin.Context) {
 	oauthState := ctrl.randomState()
+	log.Println("Login - New oauth state", oauthState)
 
+	// set oauth2 state into the cookie
 	c.SetCookie(
 		oauthStateKey,
 		oauthState,
@@ -49,7 +51,9 @@ func (ctrl *GoogleOAuthCtrl) LoginHandler(c *gin.Context) {
 		false,
 	)
 
+	// build redirect URL
 	redirectURL := ctrl.oauth2Cfg.AuthCodeURL(oauthState)
+	log.Println("Login - Redirect URL", redirectURL)
 
 	c.Redirect(http.StatusTemporaryRedirect, redirectURL)
 }
@@ -58,15 +62,17 @@ func (ctrl *GoogleOAuthCtrl) CallbackHandler(c *gin.Context) {
 	// get oauth state from cookie
 	oauthState, err := c.Cookie(oauthStateKey)
 	if err != nil {
-		log.Println("state not found", err)
 		resp := new(ErrorDTO)
 		resp.SetCodeMsg(http.StatusNotAcceptable, "state not found")
 		c.AbortWithStatusJSON(http.StatusNotAcceptable, resp)
 		return
 	}
+	log.Println("Callback - state from cookie", oauthState)
 
-	if c.Request.FormValue("state") != oauthState {
-		log.Println("invalid oauth state")
+	// get the state from form (URL) and compare with the state in the cookie
+	formState := c.Request.FormValue("state")
+	log.Println("Callback - state from form", c.Request.FormValue("state"))
+	if formState != oauthState {
 		resp := new(ErrorDTO)
 		resp.SetCode(http.StatusNotAcceptable)
 		resp.SetMessage("invalid oauth state")
@@ -74,13 +80,15 @@ func (ctrl *GoogleOAuthCtrl) CallbackHandler(c *gin.Context) {
 		return
 	}
 
+	// get data
+	formCode := c.Request.FormValue("code")
+	log.Println("Callback - code from form", formCode)
 	userData, err := ggoauth2.GetUserDataFromGoogle(
 		c,
-		c.Request.FormValue("code"),
+		formCode,
 		ctrl.oauth2Cfg,
 	)
 	if err != nil {
-		log.Println("get user data from google", err)
 		resp := new(ErrorDTO)
 		resp.SetCode(http.StatusInternalServerError)
 		resp.SetMessage("get google data error")
@@ -88,7 +96,7 @@ func (ctrl *GoogleOAuthCtrl) CallbackHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println(string(userData))
+	log.Println("user data", string(userData))
 
 	c.JSON(
 		http.StatusOK,

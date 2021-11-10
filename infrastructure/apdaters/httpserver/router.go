@@ -1,7 +1,6 @@
 package httpserver
 
 import (
-	"log"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -10,7 +9,10 @@ import (
 )
 
 func NewRouter() *gin.Engine {
-	var router = gin.New()
+	var (
+		router  = gin.New()
+		cfgFile = "/home/thanhpp/go/src/github.com/thanhpp/go-oauth2-example/secrets/client_secret_538939070983-pj4a1puc36b1trjgkpsk4uciv8u0eth3.apps.googleusercontent.com.json"
+	)
 	router.Use(gin.Logger())
 
 	router.Use(cors.New(cors.Config{
@@ -24,16 +26,10 @@ func NewRouter() *gin.Engine {
 
 	googleOAuthGr := router.Group("/auth/google")
 	{
-		ctrl := newGoogleOAuthCtrl("/home/thanhpp/go/src/github.com/thanhpp/go-oauth2-example/secrets/client_secret_538939070983-pj4a1puc36b1trjgkpsk4uciv8u0eth3.apps.googleusercontent.com.json")
-
+		ctrl := newGoogleOAuthCtrl(cfgFile)
 		googleOAuthGr.GET("/login", ctrl.LoginHandler)
-
-		log.Println("login ctrl ok")
-
 		googleOAuthGr.GET("/callback", ctrl.CallbackHandler)
 	}
-
-	log.Println("router ok", router)
 
 	return router
 }
