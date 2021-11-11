@@ -32,13 +32,15 @@ func GetUserDataFromGoogle(ctx context.Context, code string, oauthCfg *oauth2.Co
 	if err != nil {
 		return nil, fmt.Errorf("Exchange code error :%v", err)
 	}
+	log.Println("access token:", token.AccessToken)
+	log.Println("refresh token:", token.RefreshToken)
 
 	resp, err := http.Get(GoogleOAuthAPI + token.AccessToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	contents, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("read resp body %v", err)
